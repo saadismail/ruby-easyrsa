@@ -33,14 +33,15 @@ module EasyRSA
 
 # Helper for issuer details
   def gen_issuer
-    name = "/C=#{EasyRSA::Config.country}"
-    name += "/ST=#{EasyRSA::Config.state}" unless !EasyRSA::Config.state || EasyRSA::Config.state.empty?
-    name += "/L=#{EasyRSA::Config.city}"
-    name += "/O=#{EasyRSA::Config.company}"
-    name += "/OU=#{EasyRSA::Config.orgunit}"
-    name += "/CN=#{EasyRSA::Config.server}"
-    name += "/name=#{EasyRSA::Config.name}" unless !EasyRSA::Config.name || EasyRSA::Config.name.empty?
-    name += "/emailAddress=#{EasyRSA::Config.email}"
+    # name = "/C=#{EasyRSA::Config.country}"
+    # name += "/ST=#{EasyRSA::Config.state}" unless !EasyRSA::Config.state || EasyRSA::Config.state.empty?
+    # name += "/L=#{EasyRSA::Config.city}"
+    # name += "/O=#{EasyRSA::Config.company}"
+    # name += "/OU=#{EasyRSA::Config.orgunit}"
+    # name += "/CN=#{EasyRSA::Config.server}"
+    # name += "/name=#{EasyRSA::Config.name}" unless !EasyRSA::Config.name || EasyRSA::Config.name.empty?
+    # name += "/emailAddress=#{EasyRSA::Config.email}"
+    name = "/CN=#{EasyRSA::Config.server}"
 
     OpenSSL::X509::Name.parse(name)
   end

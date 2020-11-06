@@ -69,15 +69,17 @@ module EasyRSA
 
     # Cert issuer details
       def gen_issuer
-        name = "/C=#{EasyRSA::Config.country}"
-        name += "/ST=#{EasyRSA::Config.state}" unless !EasyRSA::Config.state || EasyRSA::Config.state.empty?
-        name += "/L=#{EasyRSA::Config.city}"
-        name += "/O=#{EasyRSA::Config.company}"
-        name += "/OU=#{EasyRSA::Config.orgunit}"
-        name += "/CN=#{EasyRSA::Config.server}"
-        name += "/name=#{EasyRSA::Config.name}" unless !EasyRSA::Config.name || EasyRSA::Config.name.empty?
-        name += "/name=#{EasyRSA::Config.orgunit}" if !EasyRSA::Config.name || EasyRSA::Config.name.empty?
-        name += "/emailAddress=#{EasyRSA::Config.email}"
+        # name = "/C=#{EasyRSA::Config.country}"
+        # name += "/ST=#{EasyRSA::Config.state}" unless !EasyRSA::Config.state || EasyRSA::Config.state.empty?
+        # name += "/L=#{EasyRSA::Config.city}"
+        # name += "/O=#{EasyRSA::Config.company}"
+        # name += "/OU=#{EasyRSA::Config.orgunit}"
+        # name += "/CN=#{EasyRSA::Config.server}"
+        # name += "/name=#{EasyRSA::Config.name}" unless !EasyRSA::Config.name || EasyRSA::Config.name.empty?
+        # name += "/name=#{EasyRSA::Config.orgunit}" if !EasyRSA::Config.name || EasyRSA::Config.name.empty?
+        # name += "/emailAddress=#{EasyRSA::Config.email}"
+
+        name = "/CN=#{EasyRSA::Config.server}"
 
         @ca_cert.issuer = OpenSSL::X509::Name.parse(name)
       end
@@ -88,9 +90,17 @@ module EasyRSA
         ef.subject_certificate = @ca_cert
         ef.issuer_certificate = @ca_cert
 
-        @ca_cert.add_extension ef.create_extension('subjectKeyIdentifier', 'hash')
-        @ca_cert.add_extension ef.create_extension('basicConstraints', 'CA:TRUE', true)
-        @ca_cert.add_extension ef.create_extension('keyUsage', 'cRLSign,keyCertSign', true)
+        @ca_cert.extensions = [
+          ef.create_extension("subjectKeyIdentifier", "hash"),
+          ef.create_extension("basicConstraints","CA:TRUE", true),
+          ef.create_extension("keyUsage", "cRLSign,keyCertSign", true),
+        ]
+        @ca_cert.add_extension ef.create_extension("authorityKeyIdentifier",
+                                               "keyid:always,issuer:always")
+
+        # @ca_cert.add_extension ef.create_extension('subjectKeyIdentifier', 'hash')
+        # @ca_cert.add_extension ef.create_extension('basicConstraints', 'CA:TRUE', true)
+        # @ca_cert.add_extension ef.create_extension('keyUsage', 'cRLSign,keyCertSign', true)
 
       end
 

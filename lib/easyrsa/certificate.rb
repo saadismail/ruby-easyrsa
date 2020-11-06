@@ -121,15 +121,16 @@ module EasyRSA
 
       # Cert subject for End-User
       def gen_subject
-        subject_name = "/C=#{EasyRSA::Config.country}"
-        subject_name += "/ST=#{EasyRSA::Config.state}" unless !EasyRSA::Config.state || EasyRSA::Config.state.empty?
-        subject_name += "/L=#{EasyRSA::Config.city}"
-        subject_name += "/O=#{EasyRSA::Config.company}"
-        subject_name += "/OU=#{EasyRSA::Config.orgunit}"
-        subject_name += "/CN=#{@id}"
-        subject_name += "/name=#{EasyRSA::Config.name}" unless !EasyRSA::Config.name || EasyRSA::Config.name.empty?
-        subject_name += "/emailAddress=#{@email}"
+        # subject_name = "/C=#{EasyRSA::Config.country}"
+        # subject_name += "/ST=#{EasyRSA::Config.state}" unless !EasyRSA::Config.state || EasyRSA::Config.state.empty?
+        # subject_name += "/L=#{EasyRSA::Config.city}"
+        # subject_name += "/O=#{EasyRSA::Config.company}"
+        # subject_name += "/OU=#{EasyRSA::Config.orgunit}"
+        # subject_name += "/CN=#{@id}"
+        # subject_name += "/name=#{EasyRSA::Config.name}" unless !EasyRSA::Config.name || EasyRSA::Config.name.empty?
+        # subject_name += "/emailAddress=#{@email}"
 
+        subject_name = "/CN=#{@id}"
         @cert.subject = OpenSSL::X509::Name.parse(subject_name)
       end
 
@@ -140,17 +141,19 @@ module EasyRSA
 
         @cert.extensions = [
           ef.create_extension('basicConstraints', 'CA:FALSE'),
-          ef.create_extension('subjectKeyIdentifier', 'hash'),
-          ef.create_extension('extendedKeyUsage', 'clientAuth'),
-          ef.create_extension('keyUsage', 'digitalSignature')
+          ef.create_extension('subjectKeyIdentifier', 'hash')
         ]
 
         if @certtype.eql? EasyRSA::Certificate::Client
-          @cert.add_extension ef.create_extension('nsComment', 'Easy-RSA Generated Certificate')
-          @cert.add_extension ef.create_extension('nsCertType', 'client, objsign')
+          @cert.add_extension ef.create_extension('extendedKeyUsage', 'clientAuth')
+          @cert.add_extension ef.create_extension('keyUsage', 'digitalSignature')
+          # @cert.add_extension ef.create_extension('nsComment', 'Easy-RSA Generated Certificate')
+          # @cert.add_extension ef.create_extension('nsCertType', 'client, objsign')
         elsif @certtype.eql? EasyRSA::Certificate::Server
-          @cert.add_extension ef.create_extension('nsComment', 'Easy-RSA Generated Server Certificate')
-          @cert.add_extension ef.create_extension('nsCertType', 'server')
+          @cert.add_extension ef.create_extension('extendedKeyUsage', 'serverAuth')
+          @cert.add_extension ef.create_extension('keyUsage', 'digitalSignature,keyEncipherment')
+          # @cert.add_extension ef.create_extension('nsComment', 'Easy-RSA Generated Server Certificate')
+          # @cert.add_extension ef.create_extension('nsCertType', 'server')
         end
 
         @cert.add_extension ef.create_extension('authorityKeyIdentifier',
